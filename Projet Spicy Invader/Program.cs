@@ -26,6 +26,9 @@ namespace Projet_Spicy_Invader
 
                 switch (keyMenu.KeyChar)
                 {
+                    case '1': ShipCreation();
+                        Console.Clear();
+                        break;
                     case '4':
                         DisplayAbout();
                         Console.Clear();
@@ -50,11 +53,29 @@ namespace Projet_Spicy_Invader
                                       "ETML FIN1\n" +
                                       "Yann Scerri\n" +
                                       "\n" +
-                                      "Pressez une touche afin de revenir au menu");
+                                      "Pressez [Enter] afin de revenir au menu");
                     
 
                     Console.ReadLine();
                 }
+
+                void ShipCreation()
+                {
+                    //création du vaisseau du joueur
+                    SpaceShip playerShip = new SpaceShip(speedPixelPerSecond: 10, lives: 3);
+
+                    for (int i = 0; i < 100; i++)
+                    {
+                        double elapsedSeconds = 0.1;
+
+                        playerShip.Update(elapsedSeconds);
+                    }
+
+                    Console.ReadLine();
+                }
+                
+                
+
 
 
 
