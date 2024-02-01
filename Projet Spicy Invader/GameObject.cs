@@ -49,8 +49,8 @@ internal class SpaceShip : GameObject
         {
             _speedPixelPerSecond = speedPixelPerSecond;
             _lives = lives;
-            _positionX = 0; // Position initiale X
-            _positionY = 0; // Position initiale Y
+            _positionX = 20; // Position initiale X
+            _positionY = 40; // Position initiale Y
         }
 
         public int Lives
@@ -82,24 +82,64 @@ internal class SpaceShip : GameObject
         // Dessine le vaisseau (vous pouvez personnaliser cette méthode pour votre application)
         private void Draw()
         {
-            Console.WriteLine($"Drawing spaceship at position: {_positionX}, {_positionY}");
+            string[] spaceshipDrawing = { "-[O]-" };
+
+            // Assurez-vous que la position est à l'intérieur des limites de la console
+            int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, _positionX));
+            int y = (int)Math.Max(0, Math.Min(Console.WindowHeight - 1, _positionY));
+
+            Console.SetCursorPosition(x, y);
+
+            foreach (string line in spaceshipDrawing)
+            {
+                Console.Write(line);
+            }
         }
 
-        // Vérifie si le vaisseau est encore en vie
-        private bool IsAlive()
+        public void MoveLeft()
+        {
+            _positionX -= 1;
+        }
+
+        public void MoveRight()
+        {
+            _positionX += 1;
+        }
+
+        public void HandleInput()
+        {
+            while (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo key = Console.ReadKey();
+
+                switch (key.Key)
+                {
+                    case ConsoleKey.LeftArrow:
+                        MoveLeft();
+                        break;
+                    case ConsoleKey.RightArrow:
+                        MoveRight();
+                        break;
+                }
+            }
+        }
+
+            // Vérifie si le vaisseau est encore en vie
+            private bool IsAlive()
         {
             return _lives > 0;
         }
 
-        // Met à jour le vaisseau (appelée à chaque trame/itération du jeu)
+        // Met à jour le vaisseau (appelée à chaque itération du jeu)
         public void Update(double elapsedSeconds)
         {
+            HandleInput();
             Move(elapsedSeconds);
 
             if (!IsAlive())
             {
-                Console.WriteLine("Game Over - Spaceship destroyed!");
-                // Vous pouvez ajouter ici des actions à effectuer lorsque le vaisseau est détruit.
+                Console.WriteLine("Game Over");
+             
             }
         }
 

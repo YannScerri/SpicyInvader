@@ -8,10 +8,17 @@ namespace Projet_Spicy_Invader
 {
     internal class Program
     {
+        static int playerPositionX = 10;
         static void Main(string[] args)
         {
             do
+           
+
             {
+                Console.WindowHeight = 40;
+                Console.WindowWidth = 85;
+                Console.BufferHeight = 40;
+                Console.BufferWidth = 85;
                 Console.WriteLine("***********\n" +
                                   "Menu du jeu\n" +
                                   "***********\n" +
@@ -27,7 +34,7 @@ namespace Projet_Spicy_Invader
                 switch (keyMenu.KeyChar)
                 {
                     case '1': ShipCreation();
-                        Console.Clear();
+                        
                         break;
                     case '4':
                         DisplayAbout();
@@ -61,26 +68,30 @@ namespace Projet_Spicy_Invader
 
                 void ShipCreation()
                 {
-                    //création du vaisseau du joueur
+                    // Création du vaisseau du joueur
                     SpaceShip playerShip = new SpaceShip(speedPixelPerSecond: 10, lives: 3);
 
-                    for (int i = 0; i < 100; i++)
-                    {
-                        double elapsedSeconds = 0.1;
+                    Console.Clear(); // Efface l'écran avant la boucle
 
-                        playerShip.Update(elapsedSeconds);
-                    }
+                    
+                    
+                    double elapsedSeconds = 0.1;
+
+                    playerShip.Update(elapsedSeconds);
+                    // Console.Clear(); // Ne pas appeler Console.Clear() ici
+                    
 
                     Console.ReadLine();
                 }
-                
-                
 
 
 
 
 
-            }while(true);
+
+
+
+            } while (true);
         }
     }
 }
