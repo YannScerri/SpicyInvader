@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Projet_Spicy_Invader;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -9,25 +10,12 @@ namespace Projet_Spicy_Invader
 {
     internal class GameObject
     {
-        private void Update()
-        {
-
-        }
-
-        private void Draw()
-        {
-
-        }
-
-        private void IsAlive()
-        {
-
-        }
+       
     }
 
-    
 
-internal class SpaceShip : GameObject
+
+    internal class SpaceShip : GameObject
     {
         private double _speedPixelPerSecond;
         private int _lives;
@@ -36,24 +24,16 @@ internal class SpaceShip : GameObject
         private double _positionX;
         private double _positionY;
 
-        public SpaceShip()
-        {
-            // Initialisation des valeurs par défaut si nécessaire
-            _speedPixelPerSecond = 0;
-            _lives = 0;
-            _positionX = 0;
-            _positionY = 0;
-        }
-
         public SpaceShip(double speedPixelPerSecond, int lives)
         {
             _speedPixelPerSecond = speedPixelPerSecond;
             _lives = lives;
             _positionX = 20; // Position initiale X
             _positionY = 40; // Position initiale Y
+            
         }
 
-        public int Lives
+        /*public int Lives
         {
             get { return _lives; }
             set { _lives = value; }
@@ -65,29 +45,24 @@ internal class SpaceShip : GameObject
             set { _speedPixelPerSecond = value; }
         }
 
-        // Met à jour la position du vaisseau en fonction du temps écoulé
-        private void UpdatePosition(double elapsedSeconds)
+        public double PositionX
         {
-            // Utilisez la vitesse pour mettre à jour la position (une mise à jour simple)
-            _positionX += _speedPixelPerSecond * elapsedSeconds;
-        }
+            get { return _positionX; }
+            set { _positionX = value; }
+        }*/
+       
+        
 
-        // Méthode appelée pour déplacer le vaisseau
-        public void Move(double elapsedSeconds)
-        {
-            UpdatePosition(elapsedSeconds);
-            Draw(); // Dessinez à chaque déplacement pour simuler le mouvement
-        }
-
-        // Dessine le vaisseau (vous pouvez personnaliser cette méthode pour votre application)
+        // Dessine le vaisseau 
         private void Draw()
         {
             string[] spaceshipDrawing = { "-[O]-" };
 
-            // Assurez-vous que la position est à l'intérieur des limites de la console
+            // limites
             int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, _positionX));
             int y = (int)Math.Max(0, Math.Min(Console.WindowHeight - 1, _positionY));
 
+            //position initiale du curseur
             Console.SetCursorPosition(x, y);
 
             foreach (string line in spaceshipDrawing)
@@ -96,18 +71,11 @@ internal class SpaceShip : GameObject
             }
         }
 
-        public void MoveLeft()
-        {
-            _positionX -= 1;
-        }
-
-        public void MoveRight()
-        {
-            _positionX += 1;
-        }
+        
 
         public void HandleInput()
         {
+            //Draw();
             while (Console.KeyAvailable)
             {
                 ConsoleKeyInfo key = Console.ReadKey();
@@ -115,17 +83,17 @@ internal class SpaceShip : GameObject
                 switch (key.Key)
                 {
                     case ConsoleKey.LeftArrow:
-                        MoveLeft();
+                        _positionX -= 1;
                         break;
                     case ConsoleKey.RightArrow:
-                        MoveRight();
+                        _positionX += 1;
                         break;
                 }
             }
         }
-
-            // Vérifie si le vaisseau est encore en vie
-            private bool IsAlive()
+        
+        // Vérifie si le vaisseau est encore en vie
+        private bool IsAlive()
         {
             return _lives > 0;
         }
@@ -133,17 +101,46 @@ internal class SpaceShip : GameObject
         // Met à jour le vaisseau (appelée à chaque itération du jeu)
         public void Update(double elapsedSeconds)
         {
+           
             HandleInput();
-            Move(elapsedSeconds);
-
-            if (!IsAlive())
-            {
-                Console.WriteLine("Game Over");
-             
-            }
+            Draw();
         }
 
 
-        }
     }
+
+    internal class Missile : GameObject
+    {
+        private double _positionX;
+        private double _positionY;
+        private double _speed;
+        public Missile(double missilePositionX, double missilePositionY)
+        {
+            _positionX = missilePositionX;
+            _positionY = missilePositionY;
+            _speed = 20;
+        }
+
+        public void Update(double elapsedSeconds)
+        {
+            _positionY -= _speed * elapsedSeconds; 
+        }
+
+        public void Draw()
+        {
+            Console.SetCursorPosition((int)_positionX, (int)_positionY);
+            Console.Write("|");
+        }
+
+        public void Fire()
+        {
+            Missile missile = new Missile(_positionX, _positionY);
+           
+        }
+
+        public double PositionY => _positionY;
+    }
+}
+
+
 

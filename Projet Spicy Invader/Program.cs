@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Projet_Spicy_Invader
 {
     internal class Program
     {
-        static int playerPositionX = 10;
+        static List<Missile> missiles = new List<Missile>(); 
         static void Main(string[] args)
         {
             do
@@ -19,9 +20,9 @@ namespace Projet_Spicy_Invader
                 Console.WindowWidth = 85;
                 Console.BufferHeight = 40;
                 Console.BufferWidth = 85;
-                Console.WriteLine("***********\n" +
-                                  "Menu du jeu\n" +
-                                  "***********\n" +
+                Console.WriteLine("*************\n" +
+                                  "SPACE INVADER\n" +
+                                  "*************\n" +
                                   "\n" +
                                   "[1] Jouer\n" +
                                   "[2] Options\n" +
@@ -73,17 +74,33 @@ namespace Projet_Spicy_Invader
 
                     Console.Clear(); // Efface l'écran avant la boucle
 
-                    
-                    
+
+
                     double elapsedSeconds = 0.1;
 
+
                     playerShip.Update(elapsedSeconds);
-                    // Console.Clear(); // Ne pas appeler Console.Clear() ici
-                    
+                    playerShip.HandleInput();
+
+                    foreach (Missile missile in missiles)
+                    {
+
+                        missile.Update(elapsedSeconds);
+                        missile.Draw();
+                    }
+                    missiles.RemoveAll(missile => missile.PositionY < 0);
+
+                    if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Spacebar)
+                    {
+                        
+                    }
+
+
 
                     Console.ReadLine();
                 }
 
+                
 
 
 
