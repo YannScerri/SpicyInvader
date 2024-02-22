@@ -20,20 +20,29 @@ namespace Projet_Spicy_Invader
         private double _speedPixelPerSecond;
         private int _lives;
 
-        // Position du vaisseau spatial
-        private double _positionX;
-        private double _positionY;
+        // Pour la position du vaisseau
+        private int _positionX;
+        private int _positionY;
 
-        public SpaceShip(double speedPixelPerSecond, int lives)
+        int oldPosition;
+
+        /// <summary>
+        /// constructeur du SpaceShip 
+        /// </summary>
+        /// <param name="speedPixelPerSecond"></param>
+        /// <param name="lives"></param>
+        /// <param name="positionX"></param>
+        /// <param name="positionY"></param>
+        public SpaceShip(double speedPixelPerSecond, int lives, int positionX, int positionY)
         {
             _speedPixelPerSecond = speedPixelPerSecond;
             _lives = lives;
-            _positionX = 20; // Position initiale X
-            _positionY = 40; // Position initiale Y
+            _positionX = positionX;
+            _positionY = positionY;
             
         }
 
-        /*public int Lives
+        public int Lives
         {
             get { return _lives; }
             set { _lives = value; }
@@ -45,22 +54,38 @@ namespace Projet_Spicy_Invader
             set { _speedPixelPerSecond = value; }
         }
 
-        public double PositionX
+        public int PositionX
         {
             get { return _positionX; }
             set { _positionX = value; }
-        }*/
-       
-        
+        }
 
-        // Dessine le vaisseau 
-        private void Draw()
+        public int PositionY
+        {
+            get { return _positionY; }
+            set { _positionY = value; }
+        }
+
+        public int OldPosition
+        {
+            get { return oldPosition; }
+            set { oldPosition = value; }
+        }
+
+
+
+
+
+        /// <summary>
+        /// méthode qui dessine le vaiseau
+        /// </summary>
+        public void Draw()
         {
             string[] spaceshipDrawing = { "-[O]-" };
 
             // limites
-            int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, _positionX));
-            int y = (int)Math.Max(0, Math.Min(Console.WindowHeight - 1, _positionY));
+            int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, PositionX));
+            int y = (int)Math.Max(0, Math.Min(Console.WindowHeight - 1, PositionY));
 
             //position initiale du curseur
             Console.SetCursorPosition(x, y);
@@ -72,38 +97,33 @@ namespace Projet_Spicy_Invader
         }
 
         
-
-        public void HandleInput()
-        {
-            //Draw();
-            while (Console.KeyAvailable)
-            {
-                ConsoleKeyInfo key = Console.ReadKey();
-
-                switch (key.Key)
-                {
-                    case ConsoleKey.LeftArrow:
-                        _positionX -= 1;
-                        break;
-                    case ConsoleKey.RightArrow:
-                        _positionX += 1;
-                        break;
-                }
-            }
-        }
+        /// <summary>
+        /// méthode pour déplacer le vaisseau de gauche à droite via les touches flechées
+        /// </summary>
         
-        // Vérifie si le vaisseau est encore en vie
+        
+        /// <summary>
+        /// méthode pour donner un nombre de vies au vaisseau
+        /// </summary>
+        /// <returns></returns>
         private bool IsAlive()
         {
             return _lives > 0;
         }
 
-        // Met à jour le vaisseau (appelée à chaque itération du jeu)
+        /// <summary>
+        /// méthode métant à jour le vaisseau (appelée à chaque itération du jeu)
+        /// </summary>
+        /// <param name="elapsedSeconds"></param>
         public void Update(double elapsedSeconds)
-        {
-           
-            HandleInput();
-            Draw();
+        {   
+           for (int i = 0; i < 5; i++)
+            {
+                Console.SetCursorPosition(oldPosition + i, PositionY);
+                Console.Write(" ");
+            }
+           //HandleInput();
+            
         }
 
 
