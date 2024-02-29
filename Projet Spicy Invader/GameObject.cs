@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace Projet_Spicy_Invader
 
     internal class SpaceShip : GameObject
     {
+        List<Missile> missileList = new List<Missile>();
         private double _speedPixelPerSecond;
         private int _lives;
 
@@ -24,7 +26,7 @@ namespace Projet_Spicy_Invader
         private int _positionX;
         private int _positionY;
 
-        int oldPosition;
+        private int _oldPosition;
 
         /// <summary>
         /// constructeur du SpaceShip 
@@ -39,7 +41,8 @@ namespace Projet_Spicy_Invader
             _lives = lives;
             _positionX = positionX;
             _positionY = positionY;
-            
+           
+
         }
 
         public int Lives
@@ -68,8 +71,8 @@ namespace Projet_Spicy_Invader
 
         public int OldPosition
         {
-            get { return oldPosition; }
-            set { oldPosition = value; }
+            get { return _oldPosition; }
+            set { _oldPosition = value; }
         }
 
 
@@ -119,13 +122,38 @@ namespace Projet_Spicy_Invader
         {   
            for (int i = 0; i < 5; i++)
             {
-                Console.SetCursorPosition(oldPosition + i, PositionY);
+                Console.SetCursorPosition(_oldPosition + i, PositionY);
                 Console.Write(" ");
-            }
-           //HandleInput();
-            
+            }   
         }
 
+        public void FireMissile()
+        {
+           
+            Missile missile = new Missile(PositionX + 2, PositionY - 1); // Réglez la position de départ du missile pour qu'il parte du vaisseau
+            missileList.Add(missile); // Ajoutez ce missile à une liste de missiles
+
+        }
+
+        public void UpdateMissiles(double elapsedSeconds)
+        {
+            foreach(Missile missile in missileList)
+            {
+                missile.Update(elapsedSeconds);
+                if(missile.PositionY < 0)
+                {
+                    missileList.Remove(missile);
+                }
+            }
+        }
+
+        public void DrawMissiles()
+        {
+            foreach(Missile missile in missileList)
+            {
+                missile.Draw();
+            }
+        }
 
     }
 
@@ -134,16 +162,25 @@ namespace Projet_Spicy_Invader
         private double _positionX;
         private double _positionY;
         private double _speed;
+        private double _timeToLive;
+        private double _elapsedTime;//temps écoulé
         public Missile(double missilePositionX, double missilePositionY)
         {
             _positionX = missilePositionX;
             _positionY = missilePositionY;
             _speed = 20;
+            _timeToLive = 3;
+            _elapsedTime = 0;   
         }
 
         public void Update(double elapsedSeconds)
-        {
-            _positionY -= _speed * elapsedSeconds; 
+        {   _elapsedTime += elapsedSeconds;
+            _positionY -= _speed * elapsedSeconds;
+
+            if(_elapsedTime >= _timeToLive)
+            {
+                Destroy();
+            }
         }
 
         public void Draw()
@@ -152,6 +189,10 @@ namespace Projet_Spicy_Invader
             Console.Write("|");
         }
 
+        public void Destroy()
+        {
+            
+        }
         public void Fire()
         {
             Missile missile = new Missile(_positionX, _positionY);
