@@ -84,7 +84,7 @@ namespace Projet_Spicy_Invader
         /// </summary>
         public void Draw()
         {
-            string[] spaceshipDrawing = { "-[O]-" };
+            string[] spaceshipDrawing = { "|-O-|" };
 
             // limites
             int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, PositionX));
@@ -129,9 +129,12 @@ namespace Projet_Spicy_Invader
 
         public void FireMissile()
         {
-           
-            Missile missile = new Missile(PositionX + 2, PositionY - 1); // Réglez la position de départ du missile pour qu'il parte du vaisseau
-            missileList.Add(missile); // Ajoutez ce missile à une liste de missiles
+           if (missileList.Count == 0)
+            {
+                Missile missile = new Missile(PositionX + 2, PositionY - 1); // Réglez la position de départ du missile pour qu'il parte du vaisseau
+                missileList.Add(missile); // Ajoutez ce missile à une liste de missiles
+            }
+            
 
         }
 
@@ -186,22 +189,44 @@ namespace Projet_Spicy_Invader
         public void Draw()
         {
             Console.SetCursorPosition((int)_positionX, (int)_positionY);
-            Console.Write("|");
+            Console.Write("^");
         }
 
         public void Destroy()
         {
             
         }
-        public void Fire()
-        {
-            Missile missile = new Missile(_positionX, _positionY);
-           
-        }
-
+       
         public double PositionY => _positionY;
     }
-}
+
+
+    internal class Bunker : GameObject
+    {
+        private int _positionX;
+        private int _positionY;
+
+
+        public Bunker(int positionX, int positionY)
+        {
+            _positionX = positionX;
+            _positionY = positionY;
+        }
+
+        public void Draw()
+        {
+            int width = 10; // Largeur du bunker
+            int height = 5; // Hauteur du bunker
+
+            for (int i = 0; i < height; i++)
+            {
+                Console.SetCursorPosition(_positionX, _positionY + i);
+                Console.WriteLine(new string('█', width));
+            }
+        }
+    }
+   
+} 
 
 
 

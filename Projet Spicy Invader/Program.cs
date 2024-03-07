@@ -75,8 +75,18 @@ namespace Projet_Spicy_Invader
             Console.Clear(); // Efface le menu avant le vaisseau
 
             SpaceShip playerShip = new SpaceShip(10, 3, 20, 40);
-
+            bool missileFired = false;
             playerShip.Draw();
+
+
+            Bunker bunker1 = new Bunker(10, Console.WindowHeight - 15);
+            Bunker bunker2 = new Bunker(30, Console.WindowHeight - 15);
+            Bunker bunker3 = new Bunker(50, Console.WindowHeight - 15);
+
+            bunker1.Draw();
+            bunker2.Draw();
+            bunker3.Draw();
+
 
             do
             {
@@ -93,10 +103,14 @@ namespace Projet_Spicy_Invader
                             playerShip.OldPosition = playerShip.PositionX++;
                             break;
                         case ConsoleKey.Spacebar:
-                            playerShip.FireMissile();
-                            playerShip.DrawMissiles();
-                            playerShip.UpdateMissiles(0.1);
+                            if (!missileFired)
+                            {
+                                playerShip.FireMissile();
+                                missileFired = true; // Mettre à jour l'état du tir du missile
+                            }
                             break;
+
+                            
                     }
 
                     double elapsedSeconds = 0.1;
@@ -104,6 +118,13 @@ namespace Projet_Spicy_Invader
                     playerShip.Update(elapsedSeconds);
                     playerShip.Draw();
                 }
+                else
+                {
+                    missileFired=false;
+                }
+
+                playerShip.DrawMissiles();
+                playerShip.UpdateMissiles(0.1);
 
             } while (true);
 
