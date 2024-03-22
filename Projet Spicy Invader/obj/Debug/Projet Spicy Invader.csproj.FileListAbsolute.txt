@@ -1,8 +1,0 @@
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\bin\Debug\Projet Spicy Invader.exe.config
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\bin\Debug\Projet Spicy Invader.exe
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\bin\Debug\Projet Spicy Invader.pdb
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.csproj.AssemblyReference.cache
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.csproj.SuggestedBindingRedirects.cache
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.csproj.CoreCompileInputs.cache
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.exe
-D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.pdb

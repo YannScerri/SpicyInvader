@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
-{
+{   //le reste des classes héritent de celle-ci
     internal class GameObject
     {
        
@@ -18,7 +18,7 @@ namespace Projet_Spicy_Invader
 
     internal class SpaceShip : GameObject
     {
-        List<Missile> missileList = new List<Missile>();
+        public List<Missile> missileList = new List<Missile>();
         private double _speedPixelPerSecond;
         private int _lives;
 
@@ -145,7 +145,7 @@ namespace Projet_Spicy_Invader
                 missile.Update(elapsedSeconds);
                 if(missile.PositionY < 0)
                 {
-                    missileList.Remove(missile);
+                    //missileList.Remove(missile);
                 }
             }
         }
@@ -154,19 +154,29 @@ namespace Projet_Spicy_Invader
         {
             foreach(Missile missile in missileList)
             {
-                missile.Draw();
+                if(missile.PositionY < 0)
+                {
+                    missile.Draw();
+                }
             }
         }
 
     }
 
     internal class Missile : GameObject
-    {
+    {   //variables pour les missiles
         private double _positionX;
         private double _positionY;
         private double _speed;
         private double _timeToLive;
-        private double _elapsedTime;//temps écoulé
+        private double _elapsedTime;
+        private int _oldposition = 0;
+
+        /// <summary>
+        /// Constructeur de la classe missile
+        /// </summary>
+        /// <param name="missilePositionX"></param>
+        /// <param name="missilePositionY"></param>
         public Missile(double missilePositionX, double missilePositionY)
         {
             _positionX = missilePositionX;
@@ -177,26 +187,19 @@ namespace Projet_Spicy_Invader
         }
 
         public void Update(double elapsedSeconds)
-        {   _elapsedTime += elapsedSeconds;
-            _positionY -= _speed * elapsedSeconds;
-
-            if(_elapsedTime >= _timeToLive)
-            {
-                Destroy();
-            }
+        {   
+            _elapsedTime += elapsedSeconds;
+            _positionY--;
         }
 
         public void Draw()
         {
+            Console.SetCursorPosition((int)_positionX, _oldposition);
+            Console.Write(" ");
             Console.SetCursorPosition((int)_positionX, (int)_positionY);
             Console.Write("^");
+            _oldposition = (int)_positionY;
         }
-
-        public void Destroy()
-        {
-            
-        }
-       
         public double PositionY => _positionY;
     }
 
@@ -206,13 +209,19 @@ namespace Projet_Spicy_Invader
         private int _positionX;
         private int _positionY;
 
-
+        /// <summary>
+        /// Constructeur de la classe bunker
+        /// </summary>
+        /// <param name="positionX"></param>
+        /// <param name="positionY"></param>
         public Bunker(int positionX, int positionY)
         {
             _positionX = positionX;
             _positionY = positionY;
         }
-
+        /// <summary>
+        /// méthode qui dessine les bunkers
+        /// </summary>
         public void Draw()
         {
             int width = 10; // Largeur du bunker
@@ -226,7 +235,45 @@ namespace Projet_Spicy_Invader
         }
     }
    
-} 
+   
+    
+    internal class Enemies : GameObject
+       {
+            private int _positionX;
+            private int _positionY;
+            private int _speed;
+            private int _direction;
+            private string _enemyDesign;
+
+            public Enemies(int positionX, int positionY, int speed, string enemyDesign)
+            {
+                _positionX = positionX;
+                _positionY = positionY;
+                _speed = speed;
+                _direction = 1; // initial direction, 1 for right, -1 for left
+                _enemyDesign = enemyDesign;
+            }
+
+            public void Update(double elapsedSeconds)
+            {
+                _positionX += _speed * _direction;
+
+                // Check boundaries
+                if (_positionX <= 0 || _positionX >= Console.WindowWidth - 1)
+                {
+                    _direction *= -1; // Reverse direction if hitting boundaries
+                    _positionY++; // Move enemies down if hitting boundaries
+                }
+            }
+
+            public void Draw()
+            {
+                Console.SetCursorPosition(_positionX, _positionY);
+                Console.Write(_enemyDesign);
+            }
+       }
+}
+ 
 
 
 
