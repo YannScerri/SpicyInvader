@@ -1,4 +1,8 @@
-﻿using System;
+﻿///ETMl
+///Auteur : Yann Scerri
+///Date :
+///Description : Classe program.cs du projet spicy invacder
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -163,33 +167,40 @@ namespace Projet_Spicy_Invader
             //Affichage des ennemis ligne par ligne
             for (int i = 0; i < 10; i++)
             {
-                enemiesRow1[i] = new Enemies(i * 5, 5, 1, "┌¤■■¤┐");
+                enemiesRow1[i] = new Enemies(i * 5, 5, 1,  "┌¤■■¤┐");
                 enemiesRow2[i] = new Enemies(i * 5, 10, 1, "┌¤■■¤┐");
                 enemiesRow3[i] = new Enemies(i * 5, 15, 1, "┌¤■■¤┐");
             }
 
-            foreach (Enemies enemy in enemiesRow1)
-            {
-                enemy.Update(0.1);
-                enemy.Draw();
-            }
-
-            foreach (Enemies enemy in enemiesRow2)
-            {
-                enemy.Update(0.1);
-                enemy.Draw();
-            }
-
-            foreach (Enemies enemy in enemiesRow3)
-            {
-                enemy.Update(0.1);
-                enemy.Draw();
-            }
+            
 
             bool isGameRunning = true;
             //boucle principale
             while (isGameRunning)
-            {
+            {   //effacer les caractères à chaque saut de ligne
+                foreach (Enemies enemy in enemiesRow1.Concat(enemiesRow2).Concat(enemiesRow3))
+                {
+                    enemy.Clear();
+                }
+                foreach (Enemies enemy in enemiesRow1)
+                {
+                    enemy.Update(0.1);
+                    enemy.Draw();
+                }
+
+                foreach (Enemies enemy in enemiesRow2)
+                {
+                    enemy.Update(0.1);
+                    enemy.Draw();
+                }
+
+                foreach (Enemies enemy in enemiesRow3)
+                {
+                    enemy.Update(0.1);
+                    enemy.Draw();
+                }
+                //ajuster la vitesse de déplacment des ennemis
+                System.Threading.Thread.Sleep(60);
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo keyLeftRight = Console.ReadKey(true);

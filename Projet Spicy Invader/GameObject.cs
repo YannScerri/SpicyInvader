@@ -140,12 +140,20 @@ namespace Projet_Spicy_Invader
 
         public void UpdateMissiles(double elapsedSeconds)
         {
-            foreach(Missile missile in missileList)
+            // Utilisez une boucle for inversée pour pouvoir supprimer des éléments de la liste en cours de parcours
+            for (int i = missileList.Count - 1; i >= 0; i--)
             {
+                Missile missile = missileList[i];
                 missile.Update(elapsedSeconds);
-                if(missile.PositionY < 0)
+
+                // Vérifiez si le missile est sorti des limites de la console
+                if (missile.PositionY < 0)
                 {
-                    //missileList.Remove(missile);
+                    missileList.RemoveAt(i); // Retirez le missile de la liste s'il est sorti des limites
+                }
+                else
+                {
+                    missile.Draw(); // Dessinez le missile uniquement s'il n'est pas sorti des limites
                 }
             }
         }
@@ -238,8 +246,8 @@ namespace Projet_Spicy_Invader
    
     
     internal class Enemies : GameObject
-       {
-            private int _positionX;
+    {
+         private int _positionX;
             private int _positionY;
             private int _speed;
             private int _direction;
@@ -271,7 +279,25 @@ namespace Projet_Spicy_Invader
                 Console.SetCursorPosition(_positionX, _positionY);
                 Console.Write(_enemyDesign);
             }
-       }
+
+            public void Move(int direction) 
+            {
+                _positionX += _speed * _direction;
+
+                if(_positionX <= 0 || _positionX >= Console.WindowWidth - 1)
+                {
+                    _direction *= -1;
+                    _positionY++;
+                }
+            }
+        
+            public void Clear()
+            {
+                Console.SetCursorPosition(_positionX, _positionY);
+                Console.Write(" ");
+            }
+
+    }
 }
  
 
