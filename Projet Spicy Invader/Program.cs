@@ -1,7 +1,7 @@
 ﻿///ETMl
 ///Auteur : Yann Scerri
-///Date :
-///Description : Classe program.cs du projet spicy invacder
+///Date : 18.01.2024
+///Description : Programme principal du projet Spicy Invader
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Windows.Input;
 
 namespace Projet_Spicy_Invader
 {
@@ -23,7 +24,7 @@ namespace Projet_Spicy_Invader
         [DllImport("user32.dll")] private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
         [DllImport("kernel32.dll", ExactSpelling = true)] private static extern IntPtr GetConsoleWindow();
-
+        [STAThread]
         static void Main(string[] args)
         {
             IntPtr handle = GetConsoleWindow(); IntPtr sysMenu = GetSystemMenu(handle, false);
@@ -145,103 +146,134 @@ namespace Projet_Spicy_Invader
         {
             Console.Clear(); // Efface le menu avant le vaisseau
 
-            SpaceShip playerShip = new SpaceShip(10, 3, 20, 40);
+            SpaceShip playerShip = new SpaceShip(10, 3, 20, 45);
             bool missileFired = false;
             playerShip.Draw();
 
-            //Création des bunkers
+            // Création des bunkers
             Bunker bunker1 = new Bunker(10, Console.WindowHeight - 15);
             Bunker bunker2 = new Bunker(30, Console.WindowHeight - 15);
             Bunker bunker3 = new Bunker(50, Console.WindowHeight - 15);
 
-            //Affichage des bunkers
+            // Affichage des bunkers
             bunker1.Draw();
             bunker2.Draw();
             bunker3.Draw();
 
-            //Création des ennemis
-            Enemies[]enemiesRow1 = new Enemies[10];
-            Enemies[]enemiesRow2 = new Enemies[10];
-            Enemies[]enemiesRow3 = new Enemies[10];
+            // Création des ennemis
+            List<Enemies> enemiesList = new List<Enemies>();
 
-            //Affichage des ennemis ligne par ligne
+            // Ajout des ennemis dans la liste
             for (int i = 0; i < 10; i++)
             {
-                enemiesRow1[i] = new Enemies(i * 5, 5, 1,  "┌¤■■¤┐");
-                enemiesRow2[i] = new Enemies(i * 5, 10, 1, "┌¤■■¤┐");
-                enemiesRow3[i] = new Enemies(i * 5, 15, 1, "┌¤■■¤┐");
+                enemiesList.Add(new Enemies(i * 5, 5, 1, "┌¤■■¤┐"));
+                enemiesList.Add(new Enemies(i * 5, 10, 1, "┌¤■■¤┐"));
+                enemiesList.Add(new Enemies(i * 5, 15, 1, "┌¤■■¤┐"));
             }
 
-            
+            //variables pour le tir des ennemis
+            double enemyMissileInterval = 2.0; // Tirer toutes les 2 secondes
+            double timeSinceLastEnemyMissile = 0.0;
 
             bool isGameRunning = true;
-            //boucle principale
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            // Boucle principale
             while (isGameRunning)
-            {   //effacer les caractères à chaque saut de ligne
-                foreach (Enemies enemy in enemiesRow1.Concat(enemiesRow2).Concat(enemiesRow3))
+            {
+                double elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Restart();
+
+                // Effacer les caractères à chaque saut de ligne
+                foreach (Enemies enemy in enemiesList)
                 {
                     enemy.Clear();
                 }
-                foreach (Enemies enemy in enemiesRow1)
+
+                // Mettre à jour et dessiner les ennemis
+                foreach (Enemies enemy in enemiesList)
                 {
-                    enemy.Update(0.1);
+                    enemy.Update(elapsedSeconds);
                     enemy.Draw();
                 }
 
-                foreach (Enemies enemy in enemiesRow2)
+                // Gérer le tir des missiles par les ennemis
+                timeSinceLastEnemyMissile += elapsedSeconds;
+                if (timeSinceLastEnemyMissile >= enemyMissileInterval)
                 {
-                    enemy.Update(0.1);
-                    enemy.Draw();
-                }
-
-                foreach (Enemies enemy in enemiesRow3)
-                {
-                    enemy.Update(0.1);
-                    enemy.Draw();
-                }
-                //ajuster la vitesse de déplacment des ennemis
-                System.Threading.Thread.Sleep(60);
-                if (Console.KeyAvailable)
-                {
-                    ConsoleKeyInfo keyLeftRight = Console.ReadKey(true);
-
-                    switch (keyLeftRight.Key)
+                    // Faire tirer un missile par un ennemi aléatoire
+                    if (enemiesList.Count > 0)
                     {
-                        case ConsoleKey.LeftArrow:
-                            playerShip.OldPosition = playerShip.PositionX--;
-                            break;
-                        case ConsoleKey.RightArrow:
-                            playerShip.OldPosition = playerShip.PositionX++;
-                            break;
-                        case ConsoleKey.Spacebar:
-                            if (!missileFired)
-                            {
-                                playerShip.FireMissile();
-                                missileFired = true; // Mettre à jour l'état du tir du missile
-                            }
-                            break;
-
-                            
+                        Enemies randomEnemy = enemiesList[new Random().Next(enemiesList.Count)];
+                        randomEnemy.FireMissile();
                     }
-
-                    double elapsedSeconds = 0.1;
-
-                    playerShip.Update(elapsedSeconds);
-                    playerShip.Draw();
+                    timeSinceLastEnemyMissile = 0.0;
                 }
-                else
+
+                // Mettre à jour et dessiner les missiles des ennemis
+                foreach (Enemies enemy in enemiesList)
                 {
-                    missileFired=false;
+                    enemy.UpdateMissiles(elapsedSeconds);
+                }
+
+                // Ajuster la vitesse du jeu
+                System.Threading.Thread.Sleep(1);
+
+                if (Keyboard.IsKeyDown(Key.Right))
+                {
+                    playerShip.OldPosition = playerShip.PositionX++;
+                }
+                if (Keyboard.IsKeyDown(Key.Left))
+                {
+                    playerShip.OldPosition = playerShip.PositionX--;
+                }
+                // Gérer les entrées de l'utilisateur
+                //if (Console.KeyAvailable)
+                //{
+                //    ConsoleKeyInfo keyLeftRight = Console.ReadKey(true);
+
+                //switch (keyLeftRight.Key)
+                //{
+                //    case ConsoleKey.LeftArrow:
+                //        playerShip.OldPosition = playerShip.PositionX--;
+                //        break;
+                //    case ConsoleKey.RightArrow:
+                //        playerShip.OldPosition = playerShip.PositionX++;
+                //        break;
+                //    case ConsoleKey.Spacebar:
+                //        if (!missileFired)
+                //        {
+                //            playerShip.FireMissile();
+                //            missileFired = true; // Mettre à jour l'état du tir du missile
+                //        }
+                //        break;
+                //}
+
+                //}
+                foreach(Missile missile in playerShip.missileList)
+                {
+                    if (Keyboard.IsKeyDown(Key.Space))
+                    {
+                        if (!missileFired)
+                        {
+                            playerShip.FireMissile();
+                            missileFired = true; // Mettre à jour l'état du tir du missile
+                        }
+                        else
+                        {
+                            missileFired = false;
+                        }
+
+                        playerShip.DrawMissiles();
+                        playerShip.UpdateMissiles(elapsedSeconds);
+                    }
                 }
                 
-                
-                playerShip.DrawMissiles();
-                playerShip.UpdateMissiles(0.1);
+                playerShip.Update(elapsedSeconds);
+                playerShip.Draw();
+            }
 
-                
-            } 
 
-           
         }
     }
 }
