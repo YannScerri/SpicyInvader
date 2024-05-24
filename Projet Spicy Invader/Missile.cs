@@ -9,11 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
-{   
+{
     internal class Missile : GameObject
-    {   //variables pour les missiles
-        private double _positionX;
-        private double _positionY;
+    {
+        private int _positionX;
+        private int _positionY;
         private double _speed;
         private double _timeToLive;
         private double _elapsedTime;
@@ -21,12 +21,11 @@ namespace Projet_Spicy_Invader
         private int _direction;
 
         /// <summary>
-        /// 
+        /// Constructeur de la classe missile
         /// </summary>
         /// <param name="missilePositionX"></param>
         /// <param name="missilePositionY"></param>
-        /// <param name="direction"></param>
-        public Missile(double missilePositionX, double missilePositionY, int direction)
+        public Missile(int missilePositionX, int missilePositionY, int direction)
         {
             _positionX = missilePositionX;
             _positionY = missilePositionY;
@@ -47,19 +46,17 @@ namespace Projet_Spicy_Invader
             Console.SetCursorPosition((int)_positionX, _oldposition);
             Console.Write(" ");
             Console.SetCursorPosition((int)_positionX, (int)_positionY);
-            //Console.Write("^");
             Console.Write(_direction == -1 ? "^" : "v");
             _oldposition = (int)_positionY;
         }
-        //public double PositionY => _positionY;
 
-        public double PositionY
+        public int PositionY
         {
             get { return _positionY; }
             set { _positionY = value; }
         }
 
-        public double PositionX
+        public int PositionX
         {
             get { return _positionX; }
             set { _positionX = value; }

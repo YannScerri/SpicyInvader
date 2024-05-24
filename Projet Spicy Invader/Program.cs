@@ -18,7 +18,7 @@ namespace Projet_Spicy_Invader
     {
         private const int MF_BYCOMMAND = 0x00000000;
         public const int SC_MAXIMIZE = 0xF030;
-        public const int SC_SIZE = 0xF000;//resize
+        public const int SC_SIZE = 0xF000;
         [DllImport("user32.dll")] public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
 
         [DllImport("user32.dll")] private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
@@ -48,15 +48,19 @@ namespace Projet_Spicy_Invader
             do
             {
                 // Affichage du menu
-                Console.WriteLine("*************\n" +
-                                  "SPACE INVADER\n" +
-                                  "*************\n" +
+                Console.WriteLine("" +
+                                  " ____  ____  _  ____ ___  _   _  _      _     ____  ____  _____ ____ \n" +
+                                  "/ ___\\/  __\\/ \\/   _\\\\  \\//  / \\/ \\  /|/ \\ |\\/  _ \\/  _ \\/  __//  __\\\n" +
+                                  "|    \\|  \\/|| ||  /   \\  /   | || |\\ ||| | //| / \\|| | \\||  \\  |  \\/|\n" +
+                                  "\\___ ||  __/| ||  \\_  / /    | || | \\||| \\// | |-||| |_/||  /_ |    /\n" +
+                                  "\\____/\\_/   \\_/\\____//_/     \\_/\\_/  \\|\\__/  \\_/ \\|\\____/\\____\\\\_/\\_\\\n" +
+                                  
                                   "\n" +
                                   "[1] Jouer\n" +
                                   "[2] Options\n" +
                                   "[3] Highscore\n" +
                                   "[4] A propos\n" +
-                                  "[5] Quitter\n");
+                                  "[5] Quitter\n") ;
 
                 // Permet d'attribuer les touches du clavier aux cases
                 ConsoleKeyInfo keyMenu = Console.ReadKey();
@@ -88,7 +92,7 @@ namespace Projet_Spicy_Invader
                         break;
 
                     default:
-                        Console.Clear();
+                        //Console.Clear();
                         Console.WriteLine("Veuillez entrez une option valide (1-5)");
                         Console.ReadLine();
                         Console.Clear();
@@ -133,7 +137,10 @@ namespace Projet_Spicy_Invader
                               "Date de fin : 31 mai 2024\n" +
                               "ETML FIN1\n" +
                               "Yann Scerri\n" +
-                              "\n" +
+                              "\n\n" +
+                              "Règles :\n" +
+                              "Déplacement : touches flechées\n" +
+                              "Tir : Barre espace\n\n" +
                               "Pressez [Enter] afin de revenir au menu");
 
             Console.ReadLine();
@@ -166,9 +173,9 @@ namespace Projet_Spicy_Invader
             // Ajout des ennemis dans la liste
             for (int i = 0; i < 10; i++)
             {
-                enemiesList.Add(new Enemies(i * 5, 5, 1, "┌¤■■¤┐"));
-                enemiesList.Add(new Enemies(i * 5, 10, 1, "┌¤■■¤┐"));
-                enemiesList.Add(new Enemies(i * 5, 15, 1, "┌¤■■¤┐"));
+                enemiesList.Add(new Enemies(i * 7, 5, 1, "┌¤■■¤┐"));
+                enemiesList.Add(new Enemies(i * 7, 10, 1, "┌¤■■¤┐"));
+                enemiesList.Add(new Enemies(i * 7, 15, 1, "┌¤■■¤┐"));
             }
 
             //variables pour le tir des ennemis
@@ -195,6 +202,58 @@ namespace Projet_Spicy_Invader
                 {
                     enemy.Update(elapsedSeconds);
                     enemy.Draw();
+
+                    if(enemy.EnemiesY == Console.WindowHeight - 6)
+                        isGameRunning = false;
+
+                    //if(enemy.EnemiesX == )
+                }
+
+                foreach(Enemies enemy in enemiesList)
+                {
+                    if (enemy.EnemiesX <= 0 || enemy.EnemiesX >= Console.WindowWidth - 7)
+                    {
+                        foreach (Enemies enemies in enemiesList)
+                        {
+                            enemies.EnemiesDown();
+                            Console.SetCursorPosition(0, enemies.EnemiesY - 1);
+                            Console.Write("                                                                                     ");
+                        }
+                        break;
+                    }
+                }
+
+                // Vérifie les collisions entre les missiles du vaisseau et les ennemis
+                foreach (Enemies enemy in enemiesList.ToList())
+                {
+                    // Vérifie si un missile du vaisseau touche l'ennemi
+                    if (playerShip.Missile != null &&
+                        playerShip.Missile.PositionX >= enemy.EnemiesX &&
+                        playerShip.Missile.PositionX < enemy.EnemiesX + enemy.EnemyDesign.Length &&
+                        playerShip.Missile.PositionY == enemy.EnemiesY)
+                    {
+                        // Si une collision est détectée, supprime l'ennemi touché et le missile
+                        enemy.ClearEnemy();
+                        enemiesList.Remove(enemy);
+                        playerShip.ClearMissile();
+                        
+                        // Sort de la boucle pour ne détecter qu'une collision à la fois
+                        break;
+                    }
+                }
+
+                // Vérifie les collisions entre les missiles ennemis et le vaisseau
+                foreach (Enemies enemy in enemiesList.ToList())
+                {
+                    if (enemy.Missile != null && playerShip.CheckCollision(enemy.Missile.PositionX, enemy.Missile.PositionY))
+                    {
+                        // Si une collision est détectée, réduisez le nombre de vies du vaisseau
+                        playerShip.Lives--;
+                        // Efface le missile ennemi après la collision
+                        enemy.ClearMissile();
+                        // Sort de la boucle pour ne détecter qu'une collision à la fois
+                        break;
+                    }
                 }
 
                 // Gérer le tir des missiles par les ennemis
@@ -216,8 +275,10 @@ namespace Projet_Spicy_Invader
                     enemy.UpdateMissiles(elapsedSeconds);
                 }
 
+
+
                 // Ajuster la vitesse du jeu
-                System.Threading.Thread.Sleep(1);
+                System.Threading.Thread.Sleep(30);
 
                 if (Keyboard.IsKeyDown(Key.Right))
                 {
@@ -227,50 +288,33 @@ namespace Projet_Spicy_Invader
                 {
                     playerShip.OldPosition = playerShip.PositionX--;
                 }
-                // Gérer les entrées de l'utilisateur
-                //if (Console.KeyAvailable)
-                //{
-                //    ConsoleKeyInfo keyLeftRight = Console.ReadKey(true);
-
-                //switch (keyLeftRight.Key)
-                //{
-                //    case ConsoleKey.LeftArrow:
-                //        playerShip.OldPosition = playerShip.PositionX--;
-                //        break;
-                //    case ConsoleKey.RightArrow:
-                //        playerShip.OldPosition = playerShip.PositionX++;
-                //        break;
-                //    case ConsoleKey.Spacebar:
-                //        if (!missileFired)
-                //        {
-                //            playerShip.FireMissile();
-                //            missileFired = true; // Mettre à jour l'état du tir du missile
-                //        }
-                //        break;
-                //}
-
-                //}
-                foreach(Missile missile in playerShip.missileList)
+                if (Keyboard.IsKeyDown(Key.Space))
                 {
-                    if (Keyboard.IsKeyDown(Key.Space))
-                    {
-                        if (!missileFired)
-                        {
-                            playerShip.FireMissile();
-                            missileFired = true; // Mettre à jour l'état du tir du missile
-                        }
-                        else
-                        {
-                            missileFired = false;
-                        }
-
-                        playerShip.DrawMissiles();
-                        playerShip.UpdateMissiles(elapsedSeconds);
-                    }
+                    playerShip.FireMissile();
                 }
-                
+
+                //playerShip.Update(elapsedSeconds);
+                playerShip.DrawMissiles();
+
                 playerShip.Update(elapsedSeconds);
                 playerShip.Draw();
+
+                // Vérifier si le vaisseau est détruit
+                if (!playerShip.IsAlive())
+                {
+                    // Effacer la console si le vaisseau est détruit
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("   _____                         ____                 \n" +
+                                      "  / ____|                       / __ \\                \n" +
+                                      " | |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __ \n" +
+                                      " | | |_ |/ _` | '_ ` _ \\ / _ \\ | |  | \\ \\ / / _ \\ '__|\n" +
+                                      " | |__| | (_| | | | | | |  __/ | |__| |\\ V /  __/ |   \n" +
+                                      "  \\_____|\\__,_|_| |_| |_|\\___|  \\____/  \\_/ \\___|_|  ");
+                    Console.ResetColor();
+                    // Sortir de la boucle principale
+                    break;
+                }
             }
 
 

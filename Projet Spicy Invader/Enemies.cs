@@ -1,12 +1,9 @@
 ﻿///ETML
 ///Auteur : Yann Scerri
 ///Date : 17.05.2024
-///Description : Classe Enemies comportant les informations pour les ennemis du jeu
+///Description : Classe 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
 {
@@ -17,8 +14,8 @@ namespace Projet_Spicy_Invader
         private int _speed;
         private int _direction;
         private string _enemyDesign;
-        int count = 0;
-        private List<Missile> missileList = new List<Missile>();
+        private int _oldPositionX;
+        private Missile _missile;
 
         public Enemies(int positionX, int positionY, int speed, string enemyDesign)
         {
@@ -27,37 +24,66 @@ namespace Projet_Spicy_Invader
             _speed = speed;
             _direction = 1; // initial direction, 1 for right, -1 for left
             _enemyDesign = enemyDesign;
+            _missile = null; // Initialiser le missile à null
+            _oldPositionX = positionX;
         }
+
+        public int EnemiesX
+        {
+            get { return _positionX; }
+            set { _positionX = value; }
+        }
+        public int EnemiesY
+        {
+            get { return _positionY; }
+            set { _positionY = value; }
+        }
+
+        public int EnemiesOld
+        {
+            get { return _oldPositionX; } 
+            set { _oldPositionX = value; }
+        }
+
+        
 
         public void Update(double elapsedSeconds)
         {
+            _oldPositionX = _positionX; // Save old position
             _positionX += _speed * _direction;
-            //if(count == 20)
-            //{
-            //    _positionX++;
-            //    count = 0;
-            //}
-            // Check boundaries
-            if (_positionX <= 0 || _positionX >= Console.WindowWidth - 1)
-            {
-                _direction *= -1; // Reverse direction if hitting boundaries
-                _positionY++; // Move enemies down if hitting boundaries
 
-            }
-            // count++;
+            //// Check boundaries
+            //if (_positionX <= 0 || _positionX >= Console.WindowWidth - _enemyDesign.Length)
+            //{
+            //    _direction *= -1; // Reverse direction if hitting boundaries
+            //    _positionY++; // Move enemies down if hitting boundaries
+            //}
+        }
+
+        public void EnemiesDown()
+        {
+            // Check boundaries
+            //if (_positionX <= 0 || _positionX >= Console.WindowWidth - _enemyDesign.Length)
+            //{
+                _positionY++; // Move enemies down if hitting boundaries
+                _direction *= -1; // Reverse direction if hitting boundaries
+            //}
         }
 
         public void Draw()
         {
+            Console.SetCursorPosition(_oldPositionX, _positionY);
+            Console.Write(new string(' ', _enemyDesign.Length)); // Effacer l'ancienne position
             Console.SetCursorPosition(_positionX, _positionY);
             Console.Write(_enemyDesign);
         }
 
         public void Move(int direction)
         {
+            _oldPositionX = _positionX; // Save old position
             _positionX += _speed * _direction;
 
-            if (_positionX <= 0 || _positionX >= Console.WindowWidth - 1)
+            if (_positionX <= 0 || _positionX >= Console.WindowWidth - _enemyDesign.Length)
             {
                 _direction *= -1;
                 _positionY++;
@@ -67,31 +93,54 @@ namespace Projet_Spicy_Invader
         public void Clear()
         {
             Console.SetCursorPosition(_positionX, _positionY);
-            Console.Write(" ");
+            Console.Write(new string(' ', _enemyDesign.Length)); // Effacer à la nouvelle position
         }
 
         public void FireMissile()
         {
-            Missile missile = new Missile(_positionX + 2, _positionY + 1, 1);
-            missileList.Add(missile);
+            if (_missile == null)
+            {
+                _missile = new Missile(_positionX + 2, _positionY + 1, 1); // Créer un nouveau missile
+            }
         }
 
         public void UpdateMissiles(double elapsedSeconds)
         {
-            for (int i = missileList.Count - 1; i >= 0; i--)
+            if (_missile != null)
             {
-                Missile missile = missileList[i];
-                missile.Update(elapsedSeconds);
+                _missile.Update(elapsedSeconds);
 
-                if (missile.PositionY >= Console.WindowHeight)
+                if (_missile.PositionY >= Console.WindowHeight)
                 {
-                    missileList.RemoveAt(i);
+                    _missile = null; // Réinitialiser le missile s'il est sorti des limites
                 }
                 else
                 {
-                    missile.Draw();
+                    _missile.Draw();
                 }
             }
         }
+
+        public string EnemyDesign
+        {
+            get { return _enemyDesign; }
+        }
+        
+        public void ClearEnemy()
+        {
+            Console.SetCursorPosition(this._positionX, this._positionY);
+            Console.Write("      ");
+        }
+        public void ClearMissile()
+        {
+            _missile = null;
+        }
+
+        public Missile Missile
+        {
+            get { return _missile; }
+            set { _missile = value; }
+        }
+
     }
 }

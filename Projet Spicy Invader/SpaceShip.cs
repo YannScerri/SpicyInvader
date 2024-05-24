@@ -12,7 +12,7 @@ namespace Projet_Spicy_Invader
 {
     internal class SpaceShip : GameObject
     {
-        public List<Missile> missileList = new List<Missile>();
+        private Missile _missile;
         private double _speedPixelPerSecond;
         private int _lives;
 
@@ -35,8 +35,7 @@ namespace Projet_Spicy_Invader
             _lives = lives;
             _positionX = positionX;
             _positionY = positionY;
-
-
+            _missile = null; // Initialiser le missile à null
         }
 
         public int Lives
@@ -69,10 +68,6 @@ namespace Projet_Spicy_Invader
             set { _oldPosition = value; }
         }
 
-
-
-
-
         /// <summary>
         /// méthode qui dessine le vaiseau
         /// </summary>
@@ -93,17 +88,11 @@ namespace Projet_Spicy_Invader
             }
         }
 
-
-        /// <summary>
-        /// méthode pour déplacer le vaisseau de gauche à droite via les touches flechées
-        /// </summary>
-
-
         /// <summary>
         /// méthode pour donner un nombre de vies au vaisseau
         /// </summary>
         /// <returns></returns>
-        private bool IsAlive()
+        public bool IsAlive()
         {
             return _lives > 0;
         }
@@ -119,48 +108,58 @@ namespace Projet_Spicy_Invader
                 Console.SetCursorPosition(_oldPosition + i, PositionY);
                 Console.Write(" ");
             }
+
+            // Mettre à jour le missile s'il existe
+            if (_missile != null)
+            {
+                _missile.Update(elapsedSeconds);
+
+                // Supprimer le missile s'il sort des limites de la console
+                if (_missile.PositionY < 0)
+                {
+                    _missile = null;
+                }
+                else
+                {
+                    _missile.Draw();
+                }
+            }
         }
 
         public void FireMissile()
         {
-            if (missileList.Count == 0)
+            // Créer un nouveau missile seulement s'il n'y a pas de missile actif
+            if (_missile == null)
             {
-                Missile missile = new Missile(PositionX + 2, PositionY - 1, -1); // Réglez la position de départ du missile pour qu'il parte du vaisseau
-                missileList.Add(missile); // Ajoutez ce missile à une liste de missiles
-            }
-
-
-        }
-
-        public void UpdateMissiles(double elapsedSeconds)
-        {
-            // Utilisez une boucle for inversée pour pouvoir supprimer des éléments de la liste en cours de parcours
-            for (int i = missileList.Count - 1; i >= 0; i--)
-            {
-                Missile missile = missileList[i];
-                missile.Update(elapsedSeconds);
-
-                // Vérifiez si le missile est sorti des limites de la console
-                if (missile.PositionY < 0)
-                {
-                    missileList.RemoveAt(i); // Retirez le missile de la liste s'il est sorti des limites
-                }
-                else
-                {
-                    missile.Draw(); // Dessinez le missile uniquement s'il n'est pas sorti des limites
-                }
+                _missile = new Missile(PositionX + 2, PositionY - 1, -1);
             }
         }
 
         public void DrawMissiles()
         {
-            foreach (Missile missile in missileList)
+            // Dessiner le missile s'il existe
+            if (_missile != null)
             {
-                if (missile.PositionY < 0)
-                {
-                    missile.Draw();
-                }
+                _missile.Draw();
             }
+        }
+
+        public void ClearMissile()
+        {
+            _missile = null;
+        }
+
+        public Missile Missile
+        {
+            get { return _missile; }
+            set { _missile = value; }
+        }
+
+        public bool CheckCollision(int missileX, int missileY)
+        {
+            // Vérifie si les coordonnées du missile ennemi touchent le vaisseau
+            return (missileX >= _positionX && missileX < _positionX + 5 &&
+                    missileY == _positionY);
         }
 
     }
