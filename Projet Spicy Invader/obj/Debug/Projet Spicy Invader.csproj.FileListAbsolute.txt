@@ -12,3 +12,4 @@ D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy 
 D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.csproj.CoreCompileInputs.cache
 D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.exe
 D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.pdb
+D:\Trimestre 3\Projet Spicy Invader\Projet Spicy Invader\obj\Debug\Projet Spicy Invader.csproj.SuggestedBindingRedirects.cache
