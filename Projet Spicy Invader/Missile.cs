@@ -61,5 +61,11 @@ namespace Projet_Spicy_Invader
             get { return _positionX; }
             set { _positionX = value; }
         }
+
+        public int Direction
+        {
+            get { return _direction; }
+            set { _direction = value; }
+        }
     }
 }

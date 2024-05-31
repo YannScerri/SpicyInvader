@@ -159,18 +159,21 @@ namespace Projet_Spicy_Invader
             bool missileFired = false;
             playerShip.Draw();
 
-            // Création des bunkers
-            Bunker bunker1 = new Bunker(10, Console.WindowHeight - 15);
-            Bunker bunker2 = new Bunker(30, Console.WindowHeight - 15);
-            Bunker bunker3 = new Bunker(50, Console.WindowHeight - 15);
-            Bunker bunker4 = new Bunker(70, Console.WindowHeight - 15);
+            //création des bunkers via une liste
+            List<Bunker> bunkers = new List<Bunker>
+            {
+            new Bunker(10, Console.WindowHeight - 15),
+            new Bunker(30, Console.WindowHeight - 15),
+            new Bunker(50, Console.WindowHeight - 15),
+            new Bunker(70, Console.WindowHeight - 15)
+            };
 
-            // Affichage des bunkers
-            bunker1.Draw();
-            bunker2.Draw();
-            bunker3.Draw();
-            bunker4.Draw();
-
+            //dessiner les bunkers
+            foreach(Bunker bunker in bunkers)
+            {
+                bunker.Draw();
+            } 
+            
             SpecialEnemy specialEnemy = null;
             double timeUntilSpecialEnemy = new Random().Next(4, 8);
             double elapsedTime = 0;
@@ -311,6 +314,40 @@ namespace Projet_Spicy_Invader
                 playerShip.Update(elapsedSeconds);
                 playerShip.Draw();
 
+                // Vérifiez les collisions entre les missiles et les bunkers
+                if (playerShip.Missile != null)
+                {
+                    if (CheckBunkerCollision(playerShip.Missile.PositionX, playerShip.Missile.PositionY, bunkers))
+                    {
+                        playerShip.ClearMissile();
+                    }
+                }
+                foreach (Enemies enemy in enemiesList)
+                {
+                    if (enemy.Missile != null)
+                    {
+                        if (CheckBunkerCollision(enemy.Missile.PositionX, enemy.Missile.PositionY, bunkers))
+                        {
+                            enemy.ClearMissile();
+                        }
+                    }
+                }
+
+                // Vérifiez les collisions entre les missiles et les bunkers
+                 bool CheckBunkerCollision(int missileX, int missileY, List<Bunker> Bunkers)
+                {
+                    foreach (Bunker bunker in Bunkers)
+                    {
+                        if (missileX >= bunker.PositionX && missileX < bunker.PositionX + 10 &&
+                            missileY >= bunker.PositionY && missileY < bunker.PositionY + 5)
+                        {
+                            bunker.TakeDamage(missileX, missileY);
+                            return true; // Missile touche un bunker
+                        }
+                    }
+                    return false; // Missile ne touche pas de bunker
+                }
+
 
 
 
@@ -347,6 +384,8 @@ namespace Projet_Spicy_Invader
                 Console.ReadLine();
                 Console.Clear();
             }
+
+
 
 
         }
