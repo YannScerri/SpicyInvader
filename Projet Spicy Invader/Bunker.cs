@@ -10,21 +10,22 @@ using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
 {
-    internal class Bunker : GameObject
+    internal class Bunker 
     {
-        private int _positionX;
-        private int _positionY;
-        private char[,] _structure;
+        private int _positionX; //position x des bunkers
+        private int _positionY; //position y des bunkers
+        private char[,] _structure; //tableau à 2 dimension pour la structure des bunkers
 
-        public int PositionX { get { return _positionX; } set { _positionX = value; } }
+        //getters setters des positions du bunker
+        public int PositionX { get { return _positionX; } set { _positionX = value; } } 
         public int PositionY { get { return _positionY; } set { _positionY = value; } }
 
 
         /// <summary>
         /// Constructeur de la classe bunker
         /// </summary>
-        /// <param name="positionX"></param>
-        /// <param name="positionY"></param>
+        /// <param name="positionX">position x du bunker</param>
+        /// <param name="positionY">position y du bunker</param>
         public Bunker(int positionX, int positionY)
         {
             _positionX = positionX;
@@ -66,6 +67,11 @@ namespace Projet_Spicy_Invader
             }
         }
 
+        /// <summary>
+        /// méthode pour réduire les pixels des bunkers
+        /// </summary>
+        /// <param name="missileX">position x du missile</param>
+        /// <param name="missileY">position y du missile</param>
         public void TakeDamage(int missileX, int missileY)
         {
             int localX = missileX - _positionX;

@@ -3,32 +3,26 @@
 ///Date : 17.05.2024
 ///Description : Classe SpaceShip comportant les informations pour le vaisseau du joueur
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
 {
-    internal class SpaceShip : GameObject
+    internal class SpaceShip 
     {
-        private Missile _missile;
-        private double _speedPixelPerSecond;
-        private int _lives;
+        private Missile _missile; //missile pour le vaisseau
+        private double _speedPixelPerSecond; //vitesse du vaisseau
+        private int _lives; //vies du vaisseau
+        private int _positionX;//position x du vaisseau 
+        private int _positionY; //position y du vaisseau
+        private int _oldPosition; //ancienne position du vaisseau
 
-        // Pour la position du vaisseau
-        private int _positionX;
-        private int _positionY;
-
-        private int _oldPosition;
 
         /// <summary>
         /// constructeur du SpaceShip 
         /// </summary>
-        /// <param name="speedPixelPerSecond"></param>
-        /// <param name="lives"></param>
-        /// <param name="positionX"></param>
-        /// <param name="positionY"></param>
+        /// <param name="speedPixelPerSecond">vitesse du vaisseau</param>
+        /// <param name="lives">vies du vaisseau</param>
+        /// <param name="positionX">position x du vaisseau</param>
+        /// <param name="positionY">position y du vaisseau</param>
         public SpaceShip(double speedPixelPerSecond, int lives, int positionX, int positionY)
         {
             _speedPixelPerSecond = speedPixelPerSecond;
@@ -38,30 +32,36 @@ namespace Projet_Spicy_Invader
             _missile = null; // Initialiser le missile à null
         }
 
+        /// <summary>
+        /// getter settter des vies 
+        /// </summary>
         public int Lives
         {
             get { return _lives; }
             set { _lives = value; }
         }
 
-        public double SpeedPixelPerSecond
-        {
-            get { return _speedPixelPerSecond; }
-            set { _speedPixelPerSecond = value; }
-        }
-
+        /// <summary>
+        /// getter setter de la position x
+        /// </summary>
         public int PositionX
         {
             get { return _positionX; }
             set { _positionX = value; }
         }
 
+        /// <summary>
+        /// getter setter de la position y
+        /// </summary>
         public int PositionY
         {
             get { return _positionY; }
             set { _positionY = value; }
         }
 
+        /// <summary>
+        /// getter setter de la position précédente
+        /// </summary>
         public int OldPosition
         {
             get { return _oldPosition; }
@@ -73,7 +73,7 @@ namespace Projet_Spicy_Invader
         /// </summary>
         public void Draw()
         {
-            string[] spaceshipDrawing = { "|-O-|" };
+            string[] spaceshipDrawing = { "|-O-|" }; //design du vaisseau
 
             // limites
             int x = (int)Math.Max(0, Math.Min(Console.WindowWidth - 1, PositionX));
@@ -89,7 +89,7 @@ namespace Projet_Spicy_Invader
         }
 
         /// <summary>
-        /// méthode pour donner un nombre de vies au vaisseau
+        /// méthode qui retourne les vies du vaisseau
         /// </summary>
         /// <returns></returns>
         public bool IsAlive()
@@ -100,7 +100,7 @@ namespace Projet_Spicy_Invader
         /// <summary>
         /// méthode métant à jour le vaisseau (appelée à chaque itération du jeu)
         /// </summary>
-        /// <param name="elapsedSeconds"></param>
+        /// <param name="elapsedSeconds">temps écoulé</param>
         public void Update(double elapsedSeconds)
         {
             for (int i = 0; i < 5; i++)
@@ -126,6 +126,9 @@ namespace Projet_Spicy_Invader
             }
         }
 
+        /// <summary>
+        /// méthode pour que le vaisseau tire un missile
+        /// </summary>
         public void FireMissile()
         {
             // Créer un nouveau missile seulement s'il n'y a pas de missile actif
@@ -135,6 +138,9 @@ namespace Projet_Spicy_Invader
             }
         }
 
+        /// <summary>
+        /// méthode pour afficher les missiles
+        /// </summary>
         public void DrawMissiles()
         {
             // Dessiner le missile s'il existe
@@ -144,17 +150,29 @@ namespace Projet_Spicy_Invader
             }
         }
 
+        /// <summary>
+        /// méthode pour effacer les missiles
+        /// </summary>
         public void ClearMissile()
         {
             _missile = null;
         }
 
+        /// <summary>
+        /// getter setter du missile
+        /// </summary>
         public Missile Missile
         {
             get { return _missile; }
             set { _missile = value; }
         }
 
+        /// <summary>
+        /// méthode pour gérer les collisions
+        /// </summary>
+        /// <param name="missileX">coordonée x du missile</param>
+        /// <param name="missileY">coordonée y du missile</param>
+        /// <returns></returns>
         public bool CheckCollision(int missileX, int missileY)
         {
             // Vérifie si les coordonnées du missile ennemi touchent le vaisseau

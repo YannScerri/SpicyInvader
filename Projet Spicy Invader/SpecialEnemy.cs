@@ -3,10 +3,6 @@
 ///Date : 24.05.2024
 ///Description : Classe SpecialEnemy qui gère l'ennemi bonus du jeu (vaisseau rouge dans le jeu original)  
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projet_Spicy_Invader
 {

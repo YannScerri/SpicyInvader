@@ -8,23 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 
 namespace Projet_Spicy_Invader
 {
     internal class Program
-    {
+    {   //constantes pour la taille de la console
         private const int MF_BYCOMMAND = 0x00000000;
         public const int SC_MAXIMIZE = 0xF030;
         public const int SC_SIZE = 0xF000;
-        [DllImport("user32.dll")] public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+        [DllImport("user32.dll")] public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags); //attribut de la méthode dynamique et définition de la méthode DeleteMenu qui supprime le handle du menu, la position de l'élément à supprimer et définit un index de position
 
-        [DllImport("user32.dll")] private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        [DllImport("user32.dll")] private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert); //définition de la méthode GetConsoleWindow qui obtient un handle pour la fenêtre
 
         [DllImport("kernel32.dll", ExactSpelling = true)] private static extern IntPtr GetConsoleWindow();
-        [STAThread]
+
+        [STAThread] //cet attribut indique que le modèle de threading d'application est à un seul thread d'appartement
         static void Main(string[] args)
         {   
             IntPtr handle = GetConsoleWindow(); IntPtr sysMenu = GetSystemMenu(handle, false);
@@ -32,13 +32,13 @@ namespace Projet_Spicy_Invader
             if (handle != IntPtr.Zero)
             {
                 DeleteMenu(sysMenu, SC_MAXIMIZE, MF_BYCOMMAND);
-                DeleteMenu(sysMenu, SC_SIZE, MF_BYCOMMAND);//resize
+                DeleteMenu(sysMenu, SC_SIZE, MF_BYCOMMAND);//redimensionner
             }
             // Ajuster la taille de la fenêtre
             Console.WindowHeight = 50;
             Console.WindowWidth = 85;
 
-            // Disable vertical scrolling
+            //empêcher le scrolling vertical
             Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
 
 
@@ -69,7 +69,7 @@ namespace Projet_Spicy_Invader
                 switch (keyMenu.KeyChar)
                 {   //Jeu
                     case '1':
-                        ShipCreation();
+                        GameCreation();
                         break;
                     //Options
                     case '2': 
@@ -92,7 +92,6 @@ namespace Projet_Spicy_Invader
                         break;
 
                     default:
-                        //Console.Clear();
                         Console.WriteLine("Veuillez entrez une option valide (1-5)");
                         Console.ReadLine();
                         Console.Clear();
@@ -147,16 +146,16 @@ namespace Projet_Spicy_Invader
         }
 
         /// <summary>
-        /// Méthode de création du vaisseau
+        /// Méthode de création des éléments du jeu
         /// </summary>
-        static void ShipCreation()
+        static void GameCreation()
         {
-            int updateCounter = 0;
+            int updateCounter = 0; //compteur pour la descente des ennemis
             int updateThreshold = 10;
             Console.Clear(); // Efface le menu avant le vaisseau
 
             SpaceShip playerShip = new SpaceShip(10, 3, 20, 45);
-            bool missileFired = false;
+            
             playerShip.Draw();
 
             //création des bunkers via une liste
@@ -174,11 +173,11 @@ namespace Projet_Spicy_Invader
                 bunker.Draw();
             } 
             
-            SpecialEnemy specialEnemy = null;
-            double timeUntilSpecialEnemy = new Random().Next(4, 8);
-            double elapsedTime = 0;
+            //SpecialEnemy specialEnemy = null;
+            //double timeUntilSpecialEnemy = new Random().Next(4, 8);
+            //double elapsedTime = 0;
 
-            // Création des ennemis
+            // Création de la liste des ennemis
             List<Enemies> enemiesList = new List<Enemies>();
 
             // Ajout des ennemis dans la liste
@@ -191,11 +190,11 @@ namespace Projet_Spicy_Invader
 
             //variables pour le tir des ennemis
             double enemyMissileInterval = 2.0; // Tirer toutes les 2 secondes
-            double timeSinceLastEnemyMissile = 0.0;
+            double timeSinceLastEnemyMissile = 0.0; 
 
-            bool isGameRunning = true;
-            bool Victory = false;
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            bool isGameRunning = true; //booléen pour démarrer la boucle principale
+            bool Victory = false; //booléen pour savoir si le joueur a gagné (démarre à false)
+            Stopwatch stopwatch = Stopwatch.StartNew(); //nouveau timer
 
             // Boucle principale
             while (isGameRunning)
@@ -275,7 +274,7 @@ namespace Projet_Spicy_Invader
                 {
                     if (enemiesList.Count > 0)
                     {
-                        Enemies randomEnemy = enemiesList[new Random().Next(enemiesList.Count)];
+                        Enemies randomEnemy = enemiesList[new Random().Next(enemiesList.Count)]; //faire tirer par un ennemi aléatoire
                         randomEnemy.FireMissile();
                     }
                     timeSinceLastEnemyMissile = 0.0;
@@ -293,7 +292,7 @@ namespace Projet_Spicy_Invader
                     break;
                 }
 
-                System.Threading.Thread.Sleep(1);
+                System.Threading.Thread.Sleep(1); //thread pour gérer la vitesse générale du jeu
 
                 if (Keyboard.IsKeyDown(Key.Right))
                 {
@@ -364,6 +363,7 @@ namespace Projet_Spicy_Invader
                                       " | |__| | (_| | | | | | |  __/ | |__| |\\ V /  __/ |   \n" +
                                       "  \\_____|\\__,_|_| |_| |_|\\___|  \\____/  \\_/ \\___|_|  ");
                     Console.ResetColor();
+                    while (Console.KeyAvailable) { Console.ReadKey(true); } //régler les problèmes d'afficahge après le GameOver
                     Console.ReadLine();
                     Console.Clear();
                     // Sortir de la boucle principale
@@ -381,6 +381,7 @@ namespace Projet_Spicy_Invader
                                   " | _ \\ '_/ _` \\ V / _ \\ |_|\n" +
                                   " |___/_| \\__,_|\\_/\\___/ (_)");
                 Console.ResetColor();
+                while (Console.KeyAvailable) { Console.ReadKey(true); } //régler les problèmes d'afficahge après le Bravo
                 Console.ReadLine();
                 Console.Clear();
             }
